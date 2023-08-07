@@ -4,16 +4,10 @@
 #include <iostream>
 #include <string>
 #include <random>
-#include <algorithm>
-#include <limits> // Para std::numeric_limits
-
-
 
 using namespace std;
 
 const int a = 4;
-
-
 
 class RandomNumberGenerator {
 private:
@@ -29,7 +23,18 @@ public:
         count = 0;
 
         // Inicializar la semilla del generador de números aleatorios
-        std::srand(static_cast<unsigned int>(std::time(nullptr)));
+        srand(static_cast<unsigned int>(time(nullptr))); 
+
+        // Esta línea inicializa la semilla del generador de números aleatorios.
+        // La función 'time(nullptr)' devuelve el número de segundos transcurridos desde la "época" (un punto de referencia en el tiempo).
+
+        /*time(nullptr): La función time(nullptr) devuelve el tiempo actual en segundos desde una fecha de referencia, 
+        generalmente conocida como "epoch". Esto proporciona un valor que cambia con el tiempo y se utiliza a menudo para inicializar 
+        generadores de números aleatorios.
+        static_cast<unsigned int>: Esta parte del código convierte el resultado de time(nullptr) a un tipo de dato unsigned int, 
+        que es un tipo entero sin signo. La conversión se realiza para asegurarse de 
+        que el valor de tiempo sea adecuado para ser utilizado como semilla en la función srand.*/
+
     }
 
     int generateRandomNumber() {
@@ -38,17 +43,24 @@ public:
         }
 
         int randomNumber;
-        do {
-            randomNumber = std::rand() % 6 + 1;
-        } while (usedNumbers[randomNumber - 1] == 1);
 
+        // Utilizar un bucle do-while para asegurarse de que el número generado sea único.
+        do {
+            // Generar un número aleatorio utilizando el operador de módulo (%) para limitar el rango a 1 a 6.
+            randomNumber = rand() % 6 + 1;
+        } while (usedNumbers[randomNumber - 1] == 1); // Repetir hasta que se encuentre un número no utilizado.
+
+        // Marcar el número generado como utilizado para evitar repeticiones.
         usedNumbers[randomNumber - 1] = 1;
+
+        // Incrementar el contador de números generados.
         count++;
 
+        // Devolver el número aleatorio único generado.
         return randomNumber;
     }
 };
-class Methods 
+class MasterMindGame 
 {
     RandomNumberGenerator RandNum;
 
@@ -64,14 +76,14 @@ private:
 
 
 public:
-    void IniciarTabla() 
+    MasterMindGame() //Constructor
     {
         for (size_t i = 0; i < a; i++)
         {
             MasterMind[0][i] = Fila[i];
         }
     }
-    void Tabla() 
+    void Tabla()  //Imprimir la tabla de intentos y frio/caliente
     {
         for (size_t i = 1; i < 10; i++)
         {
@@ -93,7 +105,7 @@ public:
             for (size_t j = 0; j < a; j++)
             {
 
-                char f = CFX(MasterMind[i][j],MasterMind[0][j], MasterMind[0]);
+                char f = CFX(MasterMind[i][j],MasterMind[0][j], MasterMind[0]); //El metodo FrioCalienteX se encarga de mostrar eso.
 
                 cout << "|" << f << "|";
             }
@@ -104,27 +116,27 @@ public:
         }
     }
 
-    char CFX(int M,int N, int Array[a])
+    char CFX(int Entrada,int Valor_Buscado, int Array[a])
     {
-        if ( M == 0)
+        if ( Entrada == 0) //Slot vacio
         {
             return '0';
         }
-        else if (M == N)
+        else if (Entrada == Valor_Buscado) //Frente a frente
         {
             return 'C';
         }
-        else if (FRIO(Array, M))
+        else if (FRIO(Array, Entrada)) //Frio / esta en la fila
         {
             return 'F';
         }
         else
         {
-            return 'X';
+            return 'X'; //MALO
         }
     }
 
-    bool FRIO(int Array[a], int y)
+    bool FRIO(int Array[a], int y) //REcorre la fila y verifica que el numero esta en el
     {
         bool r = false;
 
@@ -139,13 +151,15 @@ public:
         return r;
     }
 
-    bool CaptarIntento(string as)
+    bool CaptarIntento(string Cadena_Intento) //Verifica que el intento es valido antes de introducirlo
     {
-        if (as.length() != 4) {
+        if ((Cadena_Intento.length() != 4) || (Cadena_Intento.empty())) //Verifica si es de 4 elementos o esta vacio 
+        {
             return false;
         }
 
-        for (char c : as) {
+        for (char c : Cadena_Intento) //Verifica si el intento esta del 1 al 6, en ascii. el char c : as funciona como un foreach
+        { 
             if (c < '1' || c > '6') {
                 return false;
             }
@@ -154,7 +168,7 @@ public:
         return true;
     }
 
-    void GuardarIntento(int Intento[], int t)
+    void GuardarIntento(int Intento[a], int t) //Se ejecuta luego de verificar el intento y se guarda en la tabla MAsterMind. El elemento t es la fila o intento realizado
     {
 
         for (size_t i = 0; i < a; i++)
@@ -169,7 +183,7 @@ public:
         for (int i = 0; i < a; i++) {
             if (MasterMind[0][i] != p[i]) 
             {
-                return false; // Encontramos elementos diferentes, no son iguales
+                return false; // Encontramos que son diferentes, no son iguales
             }
         }
         return true;
@@ -186,43 +200,51 @@ int main()
     int intentos = 1; // Contador de intentos
     bool victoria = false;
 
-    Methods Game;
-
-    Game.IniciarTabla();
-
-    cout << "BIENVENIDO AL JUEGO DE MASTERMIND\n";
-
-    cout << "------------------------------------------------------------------------\n";
+    MasterMindGame Game;
 
     while (intentos <= maxAttempts && victoria != true)
     {
+
+
+        cout << "BIENVENIDO AL JUEGO DE MASTERMIND\n";
+
+        cout << "------------------------------------------------------------------------\n";
+
         Game.Tabla();
 
         try
         {
-            int tr[a]{};
-            string ou;
-            cout << "Ingresar Intento (arreglo de enteros): ";
-            cin >> ou;
+            int Array_Try[a]{};
+            string Entrada_Intento;
+            cout << "------------------------------------------------------------------------\n";
 
-            if (Game.CaptarIntento(ou))
+            cout << "Ingresar Intento (4 Enteros sin espacio):";
+            cin >> Entrada_Intento;
+
+            if (Game.CaptarIntento(Entrada_Intento))
             {
                 for (size_t i = 0; i < a; i++)
                 {
-                    tr[i] = ou[i] - '0';
+                    Array_Try[i] = Entrada_Intento[i] - '0'; //Se introduce la cadena de entrada en un arreglo de enteros. 
                 }
 
-                Game.GuardarIntento(tr, intentos);
-                    if (Game.Victoria(tr))
+                Game.GuardarIntento(Array_Try, intentos);
+                    if (Game.Victoria(Array_Try))
                     {
-                        cout << "HAS GANADO! | " << "CALIFICACION:" << 10 - intentos << "\n";
+
+                        cout << "HAS GANADO! | " << "CALIFICACION:" << maxAttempts - intentos << "\n";
                         cout << "------------------------------------------------------------------------\n";
+
+                        break;
 
                         victoria = true;
                     }
                     intentos++;
 
             }
+
+            system("cls");
+
 
 
         }
