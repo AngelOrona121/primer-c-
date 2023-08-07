@@ -190,6 +190,16 @@ public:
         
     }
 
+    void MostrarFilaOculta() 
+    {
+        for (size_t j = 0; j < a; j++) 
+        {
+            cout << MasterMind[0][j];
+        }
+
+        cout << '\n';
+    }
+
 
 
 };
@@ -221,6 +231,11 @@ int main()
             cout << "Ingresar Intento (4 Enteros sin espacio):";
             cin >> Entrada_Intento;
 
+            if (Entrada_Intento == "secreto")
+            {
+                Game.MostrarFilaOculta(); cin >> Entrada_Intento;
+            }
+
             if (Game.CaptarIntento(Entrada_Intento))
             {
                 for (size_t i = 0; i < a; i++)
@@ -232,7 +247,7 @@ int main()
                     if (Game.Victoria(Array_Try))
                     {
 
-                        cout << "HAS GANADO! | " << "CALIFICACION:" << maxAttempts - intentos << "\n";
+                        cout << "HAS GANADO! | " << "CALIFICACION:" << maxAttempts - intentos + 1 << "\n";
                         cout << "------------------------------------------------------------------------\n";
 
                         break;
